@@ -35,15 +35,19 @@ export default function Header() {
       </Button>
       {/* create a div including the mode-changing button & Sign In button & Hamburger menu */}
       <div className="flex gap-2 md:order-2">
+        {/* darkmode switch */}
         <Button className="w-12 h-10 hidden sm:inline" color="gray" pill>
           <FaMoon />
         </Button>
+        {/* sigin button */}
         <Link to="/sign-in">
-          <Button gradientDuoTone="purpleToBlue">Sign in</Button>
+          <Button gradientDuoTone="purpleToBlue" outline>
+            Sign in
+          </Button>
         </Link>
+        {/* hamburger menu */}
         <Navbar.Toggle />
       </div>
-
       {/* Hamburger menu config */}
       <Navbar.Collapse>
         <Navbar.Link active={path === "/"} as={"div"}>
