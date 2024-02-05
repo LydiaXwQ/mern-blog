@@ -31,6 +31,7 @@ export default function SignUp() {
         return setErrorMessage(data.message);
       }
       setLoading(false);
+      // if response works, direct user to the sign-in page
       if (res.ok) {
         navigate("/sign-in");
       }
@@ -91,6 +92,7 @@ export default function SignUp() {
                 onChange={handleChange}
               />
             </div>
+            {/* Sign up button will be disabled and show the loading effect when loading === true */}
             <Button
               gradientDuoTone="purpleToPink"
               type="submit"
@@ -104,7 +106,6 @@ export default function SignUp() {
               ) : (
                 "Sign Up"
               )}
-              Sign Up
             </Button>
           </form>
           <div className="flex gap-2 text-sm mt-5">
