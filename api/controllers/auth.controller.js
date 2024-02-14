@@ -36,6 +36,18 @@ export const signup = async (req, res, next) => {
   }
 };
 
+// User -> model :
+
+// User
+// {
+//  Username:
+//  Email:
+//  Password:
+// }
+
+// If sign in is correct:
+// 1. .findOne({email: email}) -> if there’s any object contains the given email
+// 2. If password is match with the step 1's object password
 export const signin = async (req, res, next) => {
   const { email, password } = req.body;
   if (!email || !password || email === "" || password === "") {

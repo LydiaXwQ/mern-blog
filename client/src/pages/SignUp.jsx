@@ -56,10 +56,8 @@ export default function SignUp() {
             Blog
           </Link>
           <p className="text-sm mt-5">
-            Lorem ipsum, dolor sit amet consectetur adipisicing elit. Neque
-            reiciendis voluptatibus quasi. Minima, cum! Reiciendis, fuga error!
-            Accusamus amet veniam eius quidem enim deleniti! Perferendis totam
-            sed consequuntur accusantium sequi.
+            Welcome to Lydia's Blog! Please enter your username, email and
+            password to sign up.
           </p>
         </div>
         {/* right */}
