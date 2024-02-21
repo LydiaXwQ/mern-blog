@@ -47,7 +47,7 @@ export const signup = async (req, res, next) => {
 
 // If sign in is correct:
 // 1. .findOne({email: email}) -> if there’s any object contains the given email
-// 2. If password is match with the step 1's object password
+// 2. If password matches with the step 1's object password
 export const signin = async (req, res, next) => {
   const { email, password } = req.body;
   if (!email || !password || email === "" || password === "") {
@@ -72,6 +72,60 @@ export const signin = async (req, res, next) => {
       .status(200)
       .cookie("access_token", token, { httpOnly: true })
       .json(rest);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// google:
+// check if an user exist or not:
+// if exist -> sign in the user
+// if not -> create a new user
+export const google = async (req, res, next) => {
+  // from OAuth.js (signin popup)
+  const { email, name, googlePhotoUrl } = req.body;
+  try {
+    const user = await User.findOne({ email });
+    if (user) {
+      const token = jwt.sign(
+        { id: user._id, isAdmin: user.isAdmin },
+        process.env.JWT_SECRET
+      );
+      const { password, ...rest } = user._doc;
+      res
+        .status(200)
+        .cookie("access_token", token, {
+          httpOnly: true,
+        })
+        .json(rest);
+    } else {
+      // generate a random password for the google signed-in user
+      const generatedPassword =
+        Math.random().toString(36).slice(-8) +
+        Math.random().toString(36).slice(-8);
+      const hashedPassword = bcryptjs.hashSync(generatedPassword, 10);
+      const newUser = new User({
+        // Lydia Xue -> lydiaxue1435 (the last 4 digits are random)
+        username:
+          name.toLowerCase().split(" ").join("") +
+          Math.random().toString(9).slice(-4),
+        email,
+        password: hashedPassword,
+        profilePicture: googlePhotoUrl,
+      });
+      await newUser.save();
+      const token = jwt.sign(
+        { id: newUser._id, isAdmin: newUser.isAdmin },
+        process.env.JWT_SECRET
+      );
+      const { password, ...rest } = newUser._doc;
+      res
+        .status(200)
+        .cookie("access_token", token, {
+          httpOnly: true,
+        })
+        .json(rest);
+    }
   } catch (error) {
     next(error);
   }
