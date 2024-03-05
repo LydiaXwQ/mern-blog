@@ -1,7 +1,12 @@
 import React from "react";
 import { Button } from "flowbite-react";
 import { AiFillGoogleCircle } from "react-icons/ai";
-import { GoogleAuthProvider, signInWithPopup, getAuth } from "firebase/auth";
+import {
+  GoogleAuthProvider,
+  signInWithPopup,
+  getAuth,
+  updateProfile,
+} from "firebase/auth";
 import { app } from "../firebase";
 import { useDispatch } from "react-redux";
 import { signInSuccess } from "../redux/user/userSlice";
@@ -17,6 +22,20 @@ export default function OAuth() {
     provider.setCustomParameters({ prompt: "select_account" });
     try {
       const resultsFromGoogle = await signInWithPopup(auth, provider);
+      // For update the PhotoURL in resultsFromGoogle:
+      // Extract the photo URL from Google provider's UserInfo
+      const googleUserInfo = resultsFromGoogle.user.providerData.find(
+        (userInfo) => userInfo.providerId === "google.com"
+      );
+      const googlePhotoUrl = googleUserInfo.photoURL;
+
+      // Compare and possibly update the photo URL
+      if (resultsFromGoogle.user.photoURL !== googlePhotoUrl) {
+        await updateProfile(resultsFromGoogle.user, {
+          photoURL: googlePhotoUrl,
+        });
+        console.log("User photo URL updated with Google photo URL.");
+      }
       const res = await fetch("/api/auth/google", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -31,6 +50,7 @@ export default function OAuth() {
         dispatch(signInSuccess(data));
         navigate("/");
       }
+      console.log(resultsFromGoogle);
     } catch (error) {
       console.log(error);
     }

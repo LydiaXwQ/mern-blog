@@ -86,7 +86,15 @@ export const google = async (req, res, next) => {
   const { email, name, googlePhotoUrl } = req.body;
   try {
     const user = await User.findOne({ email });
+    // if already exist, sign them in
     if (user) {
+      // For update the photoURL in profilePicture from User model:
+      // User exists, check if the Google photo URL is different from the current one
+      if (user.profilePicture !== googlePhotoUrl) {
+        // Update the user's profile picture URL with the new one from Google
+        user.profilePicture = googlePhotoUrl;
+        await user.save(); // Save the updated user document
+      }
       const token = jwt.sign(
         { id: user._id, isAdmin: user.isAdmin },
         process.env.JWT_SECRET
@@ -98,6 +106,7 @@ export const google = async (req, res, next) => {
           httpOnly: true,
         })
         .json(rest);
+      // if not exist -> create a new user
     } else {
       // generate a random password for the google signed-in user
       const generatedPassword =
